@@ -1,0 +1,51 @@
+---
+title: "Simulation_week5"
+author: "Tingyu Zhu"
+date: "10/28/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r}
+source("/Users/tingyuzhu/Tingyu_project_KDE/kde_est_func.R")
+```
+
+## check for correcteness
+```{r}
+# Define kernel functions 
+kernel_Epa <- function(x){0.75*(1-x^2)*(abs(x)<=1)} 
+kernel_norm <- function(x) dnorm(x)
+```
+
+### sample from nrom(mu,s^2)
+```{r}
+n <- 200 
+s <- 0.5
+x <- rnorm(n, 1,s)
+grid <- seq(-5,5,by=0.1)
+### normal reference bandwidth selector
+h <- 1.06*s*n^{-0.2}
+f1 <- KDE_est(x,grid,h,kernel_norm)
+
+### plot
+data <- cbind(dnorm(grid, 1,s), f1)
+matplot(grid, data, lty=c(1:2),col=c(1:2), type="l")
+legend(2,0.6,c("True","ker_est"),lty=c(1:2),col=c(1:2))
+```
+
+
+### sample from exp(lambda)
+```{r}
+n <- 200
+x <- rexp(n, 2)
+grid <- seq(0,5,by=0.1)
+### random bandwidth
+h <- 0.2
+f2 <- KDE_est(x,grid,h,kernel_norm)
+
+### plot
+data <- cbind(dexp(grid, 2), f2)
+matplot(grid, data, lty=c(1:2),col=c(1:2), type="l")
+legend(3.5,2,c("True","ker_est"),lty=c(1:2),col=c(1:2))
+```
+
