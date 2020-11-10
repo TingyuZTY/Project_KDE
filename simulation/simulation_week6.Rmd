@@ -1,0 +1,117 @@
+---
+title: "simulation_week6"
+author: "Tingyu Zhu"
+date: "11/2/2020"
+output: pdf_document
+---
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+library(here)
+devtools::load_all()
+set.seed(1222)
+```
+
+## Commonly used kernel functions
+
+In the beta family kernel density, lambda=0,1,2,3 correspond to the uniform, the Epanech- nikov, the biweight, and the triweight kernel functions, respectively.  
+```{r}
+kernel_beta <- function(x,lambda){(1-x^2)^lambda*(abs(x)<=1)/beta(lambda+1,0.5)}
+
+kernel_comp <- tibble(
+  grid = seq(-3,3,by=0.1),
+  Normal = dnorm(grid),
+  Uniform = kernel_beta(grid,0),
+  Epanechnikov = kernel_beta(grid,1),
+  Biweight = kernel_beta(grid,2),
+  Triweight = kernel_beta(grid,3)
+  )
+
+kernel_comp_long <- kernel_comp %>% 
+  pivot_longer(c(`Normal`, `Uniform`,`Epanechnikov`,
+                 `Biweight`,`Triweight`), names_to = "Kernel", values_to = "Density")
+
+
+ggplot(data=kernel_comp_long) + 
+  geom_line(aes(x = grid, y = Density, color = Kernel)) +
+  labs(title = "Commonly used kernel functions") +
+  theme_light() 
+```
+
+
+## Compute the MADE (Mean Absolute Deviation Errors)
+
+The Mean Absolute Deviation Errors for $\hat{f}(\cdot)$is defined as $$MADE=\frac{1}{n}\sum_{k=1}^{n}|(\hat{f}(u_k)-f(u_k))|$$,
+where $\hat{f}(u_k)$ is the kernel estimte of $f(u_k))$, and {$u_k$} are the frid points taken to be arbitrary within the range of data.
+
+When the sample is generated from the known distribution like exp,beta, gamma, etc., we can use corresponding built-in functions (dexp(), dgamma, etc.) to calculated the true denstities of the grid points. If the sample is not from the familar distributions, we can use the built-in function "denstiy()" in R to get the value of $f(u_k))$s.
+
+```{r}
+made <- function(f_est,f_true) mean(abs(f_est-f_true)) 
+```
+
+### Different sample sizes & kernels
+
+
+```{r}
+# Define some functions for gievn h=bandwidth, 
+# simulate over different sample size and kernels
+
+kde_n_ker_est <- function(x, n, ker, grid){
+  # x large population
+  # n sample sizes
+  # ker name of kernels
+  # grid grid points
+  map2(.x = n, .y = ker, 
+        ~KDE_est(sample(x, .x, replace = FALSE), 
+                  grid, h= 1.06*100^(-0.2), ker = .y))
+}
+
+
+sim_made <- function(ns, kes, x, grid, true_f){
+  # generates every combination of parameters (ns:kers)
+  simulation_params_big <- list(
+  n = ns,
+  kernel_type = kers)
+  n_ker_est_big <- cross_df(simulation_params_big)
+  
+  n_ker_est_big <- n_ker_est_big %>% 
+  mutate(
+    f_ests = kde_n_ker_est(x, n, kernel_type, grid),
+    f_true = map(1:length(n), ~true_f)
+  ) %>% 
+  mutate(
+    MADE = map2_dbl(.x = f_ests, .y = f_true, ~made(.x,.y))
+  )
+  return(n_ker_est_big$MADE)
+}
+
+
+```
+
+### Simulation
+Generate samples from t(3) distribution. 
+```{r}
+x <- rt(50000, df=15)
+ns <- c(100, 500, 1000, 1500)
+kers  <- c("normal", "uniform", "epanechnikov", "biweight", "triweight")
+grid <- seq(-5,15, 0.1)
+true_f <- dt(grid, df=15)
+
+n.sim <- 100
+
+sim_rlt <- map(1:n.sim, ~sim_made(ns, kers, x, grid,true_f))
+
+made_mat <- matrix(unlist(sim_rlt), nrow = length(ns)*length(kers) )
+
+made_comapre <- tibble(
+  n =rep(ns, each=length(kers)),
+  kernel_type = rep(kers, time=length(ns)),
+  made_mean = apply(made_mat, 1, mean),
+  made_sd = apply(made_mat, 1, sd)
+)
+write_rds(made_mat , here("results", "week6-sim.rds"))
+made_comapre 
+```
+

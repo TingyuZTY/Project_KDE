@@ -3,8 +3,8 @@ title: "Simulation_week5"
 author: "Tingyu Zhu"
 date: "10/28/2020"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 ```{r}
 source("/Users/tingyuzhu/Tingyu_project_KDE/kde_est_func.R")
