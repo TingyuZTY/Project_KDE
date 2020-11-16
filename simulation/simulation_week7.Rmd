@@ -1,0 +1,153 @@
+---
+title: "simulation_week7"
+author: "Tingyu Zhu"
+date: "11/12/2020"
+output: pdf_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+library(here)
+devtools::load_all()
+set.seed(1222)
+```
+
+Inspection about the bandwidth. Compare the performance under different methods of selecting the bandwidth. 
+
+## Bulid functions that can simulate over different sample sizes & kernels & bandwidths.
+
+```{r}
+kde_est_big <- function(x, n, ker, h, grid){
+  # x: large population
+  # n: sample sizes
+  # ker: name of kernels
+  # h: bandwidths 
+  # grid grid points
+  l <- data.frame(n=n, ker=ker, h=h) %>% 
+    mutate( x = map(.x=n, ~sample(x, .x, replace = FALSE)))
+  l$n <- NULL
+  
+  pmap(l, KDE_est, grid=grid)
+}
+
+
+
+sim_big_made <- function(x, ns, kes, h, grid, true_f){
+  # generates every combination of parameters (ns:kers:hs)
+  simulation_params_big <- list(
+  n = ns,
+  kernel_type = kers,
+  h = hs)
+  
+  est_big <- cross_df(simulation_params_big)
+  
+  est_big <- est_big %>% 
+  mutate(
+    f_ests = kde_est_big(x, n, kernel_type, h, grid),
+    f_true = map(1:length(n), ~true_f)
+  ) %>% 
+  mutate(
+    MADE = map2_dbl(.x = f_ests, .y = f_true, ~made(.x,.y))
+  )
+  return(est_big$MADE)
+}
+```
+
+### Simulation 
+```{r}
+x <- rt(5000, df=15)
+
+ns <- c(100, 500)
+kers  <- c("normal","epanech", "uniform", "biweight", "triweight")
+hs <- c(0.1,0.5,1)
+
+grid <- seq(-5,15, 0.1)
+true_f <- dt(grid, df=15)
+
+n.sim <- 50
+
+sim_rlt <- map(1:n.sim, ~sim_big_made(x, ns, kers, hs, grid,true_f))
+
+made_mat_big <- matrix(unlist(sim_rlt), nrow=length(ns)*length(hs)*length(kers))
+
+
+made_comapre <- cross_df(list(n = ns, kernel_type = kers, h = hs)) %>% 
+  mutate(made_mean=apply(made_mat_big, 1, mean),
+         made_sd=apply(made_mat_big, 1, sd))
+
+rownames(made_mat_big) <- paste(made_comapre$n, 
+                            made_comapre$kernel_type, made_comapre$h, sep = ", ")
+
+write_rds(made_mat_big , here("results", "week7-sim-1.rds"))
+made_comapre
+```
+
+
+## Types of bandwidth selectors
+### 1. Normal reference bandwidth selector 
+
+The normal reference bandwidth selector is defined by:
+
+$$
+\hat{h}_{opt}=\left\{\begin{array}{l}
+1.06 s n^{-1 / 5} \text{ for the Gaussian kernel}\\
+2.34 s n^{-1 / 5}\text{ for the Epanechnikov kernel}
+\end{array}\right.
+$$
+
+The normal reference bandwidth selector is only a simple rule of thumb. It is a good selector when the data are nearly Gaussian distributed. However, it can lead to over-smooth when the underlying distribution is asymmetric or multi-modal.
+
+
+### 2. plug-in bandwidth selector
+
+There are quite a few important techniques for selecting the bandwidth such as cross-validation (CV) and plug-in bandwidth selectors. 
+
+Function dpik() in the package KernSmooth in R selects a bandwidth for estimating the kernel density estimation using the plug-in method.
+
+```{r}
+library("KernSmooth")
+```
+
+
+```{r}
+nx <- 5000
+x <- rt(nx, df=15)
+
+(h_opt_Gau <- 1.06*sd(x)*nx^(-0.2)) 
+(h_opt_Epa <- 2.34*sd(x)*nx^(-0.2)) 
+
+(h_plug_Gau <- dpik(x,kernel = "normal") )
+(h_plug_Epa <- dpik(x,kernel = "epanech"))
+
+(h_ran_Gau <- 0.5*nx^(-0.2))
+(h_ran_Epa <- 0.5*nx^(-0.2))
+
+ns <- c(4000)
+kers  <- c("normal","epanech")
+hs <- c(h_opt_Gau,h_plug_Gau,h_ran_Gau, h_opt_Epa, h_plug_Epa,h_ran_Epa)
+
+grid <- seq(-5,15, 0.1)
+true_f <- dt(grid, df=15)
+
+n.sim <- 50
+
+sim_rlt_bdwt <- map(1:n.sim, ~sim_big_made(x, ns, kers, hs, grid,true_f))
+
+made_mat_bdwt <- matrix(unlist(sim_rlt_bdwt), nrow=length(ns)*length(hs)*length(kers))
+
+
+made_comapre_bdwt <- cross_df(list(n = ns, kernel_type = kers, h = hs)) %>% 
+  mutate(made_mean=apply(made_mat_bdwt, 1, mean),
+         made_sd=apply(made_mat_bdwt, 1, sd))
+
+rownames(made_mat_bdwt) <- paste(made_comapre_bdwt$n, 
+                            made_comapre_bdwt$kernel_type, 
+                            round(made_comapre_bdwt$h,4), sep = ", ")
+
+write_rds(made_mat_bdwt , here("results", "week7-sim-2.rds"))
+made_comapre_bdwt
+```
+
+Results show that under this setting, the optimal rule of thumb bandwidths and plug-in bandwidths have the smallest MADE under their corresponding kernels. 

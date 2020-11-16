@@ -1,7 +1,7 @@
 # Define kernel functions 
 kernel_norm <- function(x) dnorm(x)
 kernel_uniform <- function(x){(abs(x)<=1)/2}
-kernel_epnik <- function(x){(1-x^2)*(abs(x)<=1)*0.75}
+kernel_epanech <- function(x){(1-x^2)*(abs(x)<=1)*0.75}
 kernel_bi <- function(x){(1-x^2)^2*(abs(x)<=1)/beta(3,0.5)}
 kernel_tri <- function(x){(1-x^2)^3*(abs(x)<=1)/beta(4,0.5)}
 
@@ -13,7 +13,7 @@ KDE_est <- function(x,grid,h,ker){
   
   if(ker=="normal") ker <- kernel_norm
   else if(ker=="uniform") ker <- kernel_uniform
-  else if(ker=="epanechnikov") ker <- kernel_epnik
+  else if(ker=="epanech") ker <- kernel_epanech
   else if(ker=="biweight") ker <- kernel_bi
   else if(ker=="triweight") ker <- kernel_tri
   
@@ -31,3 +31,6 @@ KDE_est <- function(x,grid,h,ker){
   f_est <- apply(ker_est,2,mean)/h
   return(f_est)
 }
+
+# Compute the MADE
+made <- function(f_est,f_true) mean(abs(f_est-f_true)) 

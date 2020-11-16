@@ -95,7 +95,7 @@ Generate samples from t(3) distribution.
 ```{r}
 x <- rt(50000, df=15)
 ns <- c(100, 500, 1000, 1500)
-kers  <- c("normal", "uniform", "epanechnikov", "biweight", "triweight")
+kers  <- c("normal", "uniform", "epanech", "biweight", "triweight")
 grid <- seq(-5,15, 0.1)
 true_f <- dt(grid, df=15)
 
