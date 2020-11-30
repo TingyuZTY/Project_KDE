@@ -18,8 +18,9 @@ set.seed(1222)
 ## Beaver's temprature
 Here, we try to apply our KDE method to a real dataset: Beaver1, which records the beaver's body temperature during a day.
 
-```{r}
+We try to estimate its distribution by two types of kernel functions. The first type of bandwidths are selected using the plug in method under corresponding kernel functions. And using the Guassian optimal bandwidth as the second type of bandwidth.
 
+```{r}
 plot(density(beaver1$temp))
 # ?beaver1
 
@@ -30,7 +31,7 @@ h_opt <- 1.06*sd(beaver1$temp)*length(beaver1$temp)^(-0.2)
 
 params_big <- list(
   kernel_type = c("normal","biweight"),
-  bandwidth_type = c("gua_piug"=h_plug_gua,"bi_plug"=h_plug_bi,"gua_opt"=h_opt)
+  bandwidth_type = c("gua_plug"=h_plug_gua,"bi_plug"=h_plug_bi,"gua_opt"=h_opt)
   )
 
 est_big <- cross_df(params_big) 
