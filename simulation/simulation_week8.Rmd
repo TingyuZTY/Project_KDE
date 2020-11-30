@@ -1,0 +1,72 @@
+---
+title: "simulation_week8"
+author: "Tingyu Zhu"
+date: "11/29/2020"
+output: pdf_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+library(here)
+library("KernSmooth")
+devtools::load_all()
+set.seed(1222)
+```
+
+## Beaver's temprature
+Here, we try to apply our KDE method to a real dataset: Beaver1, which records the beaver's body temperature during a day.
+
+```{r}
+
+plot(density(beaver1$temp))
+# ?beaver1
+
+h_plug_gua <- dpik(beaver1$temp,kernel = "normal") 
+h_plug_bi <- dpik(beaver1$temp,kernel = "biweight") 
+h_opt <- 1.06*sd(beaver1$temp)*length(beaver1$temp)^(-0.2)
+
+
+params_big <- list(
+  kernel_type = c("normal","biweight"),
+  bandwidth_type = c("gua_piug"=h_plug_gua,"bi_plug"=h_plug_bi,"gua_opt"=h_opt)
+  )
+
+est_big <- cross_df(params_big) 
+
+grid = seq(min(beaver1$temp)-0.5, max(beaver1$temp)+0.5, length.out=512)
+
+est_big <- est_big %>% 
+  mutate(
+    f_ests = map2(.x=kernel_type, .y=bandwidth_type,
+                  ~KDE_est(beaver1$temp,ker=.x,h=.y,grid=grid)$f_est),
+    grid =  map2(.x=kernel_type, .y=bandwidth_type,
+                  ~KDE_est(beaver1$temp,ker=.x,h=.y,grid=grid)$grid)
+  ) 
+
+
+est_big$bandwidth_type <- ifelse(abs(est_big$bandwidth_type - 0.053)<0.001, "gua_plug", 
+                                 ifelse(abs(est_big$bandwidth_type - 0.138)<0.001, 
+                                 "bi_plug", "gua_opt"))
+
+est_big_df <- unnest(est_big)
+
+est_big_df %>% 
+  ggplot()+
+  geom_line(aes(x = grid,y = f_ests,color = kernel_type))+
+  facet_wrap(~bandwidth_type)+
+  xlab("temperature")+
+  ylab("density")+
+  theme_bw() +ggtitle("KDE of Beaver temperature")
+
+est_big_df %>% 
+  ggplot()+
+  geom_line(aes(x = grid,y = f_ests,color = bandwidth_type))+
+  facet_wrap(~kernel_type)+
+  scale_color_brewer(palette="Dark2") +
+   xlab("temperature")+
+  ylab("density")+
+  theme_bw() +ggtitle("KDE of Beaver temperature")
+```
+
