@@ -116,7 +116,9 @@ library("KernSmooth")
 
 ```{r}
 nx <- 5000
-x <- rt(nx, df=15)
+#x <- rt(nx, df=15)
+#x <- rexp(nx, 10)
+x <- rgamma(nx, 2,0.5)
 
 (h_opt_Gau <- 1.06*sd(x)*nx^(-0.2)) 
 (h_opt_Epa <- 2.34*sd(x)*nx^(-0.2)) 
@@ -132,8 +134,9 @@ kers  <- c("normal","epanech")
 hs <- c(h_opt_Gau,h_plug_Gau,h_ran_Gau, h_opt_Epa, h_plug_Epa,h_ran_Epa)
 
 grid <- seq(-5,15, 0.1)
-true_f <- dt(grid, df=15)
-
+#true_f <- dt(grid, df=15)
+#true_f <- dexp(grid, 10)
+true_f <- dgamma(grid, 2,0.5)
 n.sim <- 50
 
 sim_rlt_bdwt <- map(1:n.sim, ~sim_big_made(x, ns, kers, hs, grid,true_f))
@@ -149,7 +152,8 @@ rownames(made_mat_bdwt) <- paste(made_comapre_bdwt$n,
                             made_comapre_bdwt$kernel_type, 
                             round(made_comapre_bdwt$h,4), sep = ", ")
 
-write_rds(made_mat_bdwt , here("results", "week7-sim-2.rds"))
+write_rds(made_mat_bdwt , here("results", "week78-sim-gamma.rds"))
+
 made_comapre_bdwt
 ```
 
