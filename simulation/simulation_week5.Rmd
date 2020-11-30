@@ -6,9 +6,15 @@ output:
   pdf_document: default
   html_document: default
 ---
-```{r}
-source("/Users/tingyuzhu/Tingyu_project_KDE/kde_est_func.R")
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+library(here)
+devtools::load_all()
+set.seed(1222)
 ```
+
 
 ## check for correcteness
 ```{r}
@@ -25,7 +31,7 @@ x <- rnorm(n, 1,s)
 grid <- seq(-5,5,by=0.1)
 ### normal reference bandwidth selector
 h <- 1.06*s*n^{-0.2}
-f1 <- KDE_est(x,grid,h,kernel_norm)
+f1 <- KDE_est(x,grid,h,"normal")$f_est
 
 ### plot
 data <- cbind(dnorm(grid, 1,s), f1)
@@ -41,7 +47,7 @@ x <- rexp(n, 2)
 grid <- seq(0,5,by=0.1)
 ### random bandwidth
 h <- 0.2
-f2 <- KDE_est(x,grid,h,kernel_norm)
+f2 <- KDE_est(x,grid,h,"normal")$f_est
 
 ### plot
 data <- cbind(dexp(grid, 2), f2)

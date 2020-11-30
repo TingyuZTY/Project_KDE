@@ -29,11 +29,14 @@ kde_est_big <- function(x, n, ker, h, grid){
     mutate( x = map(.x=n, ~sample(x, .x, replace = FALSE)))
   l$n <- NULL
   
-  pmap(l, KDE_est, grid=grid)
+  est <- pmap_dfr(l, KDE_est, grid=grid)
+  list(est$f_est)
 }
 
 
-
+n=100
+ker="normal"	
+h=0.1	
 sim_big_made <- function(x, ns, kes, h, grid, true_f){
   # generates every combination of parameters (ns:kers:hs)
   simulation_params_big <- list(

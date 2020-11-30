@@ -65,7 +65,7 @@ kde_n_ker_est <- function(x, n, ker, grid){
   # grid grid points
   map2(.x = n, .y = ker, 
         ~KDE_est(sample(x, .x, replace = FALSE), 
-                  grid, h= 1.06*100^(-0.2), ker = .y))
+                  grid, h= 1.06*100^(-0.2), ker = .y)$f_est)
 }
 
 
