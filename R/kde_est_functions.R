@@ -7,9 +7,12 @@ kernel_tri <- function(x){(1-x^2)^3*(abs(x)<=1)/beta(4,0.5)}
 
 x <- rnorm(100)
 # Define the KDE
-KDE_est <- function(x,grid,h,ker){
+KDE_est <- function(x,grid=NULL,h,ker){
   # inputs: 
   # x=sample; h=bandwidth; grid=grid point; ker=kernel 
+  if(is.null(grid)) {
+    grid = seq(min(x)-3*h, max(x)+3*h, length.out=512)
+  }
   
   if(ker=="normal") ker <- kernel_norm
   else if(ker=="uniform") ker <- kernel_uniform
@@ -29,7 +32,9 @@ KDE_est <- function(x,grid,h,ker){
   x_ker <- x_mat - t(x_grid)
   ker_est <- ker(x_ker/h)
   f_est <- apply(ker_est,2,mean)/h
-  return(f_est)
+  return(list("f_est"=f_est, "grid"=grid))
+  #return(f_est)
+  
 }
 
 # Compute the MADE
