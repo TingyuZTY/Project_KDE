@@ -33,6 +33,8 @@ Presentation:
 2. Slide for the presentation can be found here:
 https://github.com/ST541-Fall2020/Tingyu_project_KDE/blob/master/ST541_KDE_Slides_TingyuZhu.pdf
 
+Report:
+The final report can be found here: https://github.com/ST541-Fall2020/Tingyu_project_KDE/blob/master/Report.pdf
 
 Reference:
 1. https://mathisonian.github.io/kde/
