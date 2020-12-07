@@ -58,8 +58,8 @@ The `kde_est_function.R` in the `R` folder needs to be run to perform the simula
 
 2. kde_est_big(x, n, ker, h, grid) is used to simulate over different sample sizes & kernels & bandwidths. 
    inputs:
-         - x: numeric vector, the large population;  
-         - n: positive numeric, the sample size;
+         - x: numeric vector, the large population; \n
+         - n: positive numeric, the sample size;\\
          - ker: character, name of the kernel function;
          - h: positive numeric, the bandwidth;
          - grid: numeric vector, the grid points.
