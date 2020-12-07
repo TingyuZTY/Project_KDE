@@ -57,23 +57,23 @@ The `kde_est_function.R` in the `R` folder needs to be run to perform the simula
 
 
 2. kde_est_big(x, n, ker, h, grid) is used to simulate over different sample sizes & kernels & bandwidths. 
-   inputs:
-         - x: numeric vector, the large population; \n
-         - n: positive numeric, the sample size;\\
-         - ker: character, name of the kernel function;
-         - h: positive numeric, the bandwidth;
-         - grid: numeric vector, the grid points.
-   output: vector of the estimated densities. 
+   - inputs:
+        - x: numeric vector, the large population;
+        - n: positive numeric, the sample size;
+        - ker: character, name of the kernel function;
+        - h: positive numeric, the bandwidth;
+        - grid: numeric vector, the grid points.
+   - output: vector of the estimated densities. 
 
 3. sim_big_made(x, ns, kers, hs, grid, true_f) is used to first generate combination of parameters. Then, for each combination of parameters, `kde_est_big()` is used to generate the estimated densities, and the corresponding true densities. The `made()` is used to computae the Mean Absolute Deviation Errors(MADE). 
-  inputs:
-      x: numeric vector, the large population;  
-      ns: numeric vector, different sample sizes;
-      kers: character vector, names of different kernel functions;
-      hs: positive numeric vector, different bandwidths;
-      grid: numeric vector, the grid points;
-      true_f: numeric vector, true densities.
-   output: list of MADEs under different combination of parameters.
+   - inputs:
+     - x: numeric vector, the large population;  
+     - ns: numeric vector, different sample sizes;
+     - kers: character vector, names of different kernel functions;
+     - hs: positive numeric vector, different bandwidths;
+     - grid: numeric vector, the grid points;
+     - true_f: numeric vector, true densities.
+   - output: list of MADEs under different combination of parameters.
 
 
 
