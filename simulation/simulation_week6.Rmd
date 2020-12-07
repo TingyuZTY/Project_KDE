@@ -47,13 +47,11 @@ where $\hat{f}(u_k)$ is the kernel estimte of $f(u_k))$, and {$u_k$} are the fri
 
 When the sample is generated from the known distribution like exp,beta, gamma, etc., we can use corresponding built-in functions (dexp(), dgamma, etc.) to calculated the true denstities of the grid points. If the sample is not from the familar distributions, we can use the built-in function "denstiy()" in R to get the value of $f(u_k))$s.
 
-```{r}
-made <- function(f_est,f_true) mean(abs(f_est-f_true)) 
-```
+## Simulation 
 
-### Different sample sizes & kernels
+Explore the simulation results with different sample sizes & kernels
 
-
+### Build simulation functions that can save the MADE.
 ```{r}
 # Define some functions for gievn h=bandwidth, 
 # simulate over different sample size and kernels
@@ -87,31 +85,39 @@ sim_made <- function(ns, kes, x, grid, true_f){
   return(n_ker_est_big$MADE)
 }
 
-
 ```
 
 ### Simulation
-Generate samples from t(3) distribution. 
+Generate samples from t(3) distribution. Then, using five types of kernel function and different size of samples that are drawn from the large population.
 ```{r}
-x <- rt(50000, df=15)
-ns <- c(100, 500, 1000, 1500)
-kers  <- c("normal", "uniform", "epanech", "biweight", "triweight")
+# population
+x <- rt(50000, df=3)
+
+# simulaiton parameters
+ns <- c(100, 500, 1000, 1500) # sample sizes
+kers  <- c("normal", "uniform", "epanech", "biweight", "triweight") # kernel functions
 grid <- seq(-5,15, 0.1)
-true_f <- dt(grid, df=15)
 
-n.sim <- 100
+# true density 
+true_f <- dt(grid, df=3)
 
+# simulation
+n.sim <- 100 # number of replicates
 sim_rlt <- map(1:n.sim, ~sim_made(ns, kers, x, grid,true_f))
 
+```
+
+
+### Save result
+```{r}
 made_mat <- matrix(unlist(sim_rlt), nrow = length(ns)*length(kers) )
 
 made_comapre <- tibble(
-  n =rep(ns, each=length(kers)),
-  kernel_type = rep(kers, time=length(ns)),
+  n =rep(ns, time=length(kers)),
+  kernel_type = rep(kers, each=length(ns)),
   made_mean = apply(made_mat, 1, mean),
   made_sd = apply(made_mat, 1, sd)
 )
 write_rds(made_mat , here("results", "week6-sim.rds"))
-made_comapre 
+write_rds(made_comapre, here("results", "week6-sim-plot.rds"))
 ```
-
