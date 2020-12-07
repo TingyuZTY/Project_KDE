@@ -74,7 +74,9 @@ The `kde_est_function.R` in the `R` folder needs to be run to perform the simula
      - grid: numeric vector, the grid points;
      - true_f: numeric vector, true densities.
    - output: list of MADEs under different combination of parameters.
-
+   
+### Usage
+Usge of the above functions can be found using `?KDE_est`,`?kde_est_big`,`?sim_big_made`.
 
 
 ## Reference
