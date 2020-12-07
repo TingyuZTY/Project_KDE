@@ -31,7 +31,6 @@ Contents:
 Presentation: 
 1. Plots displayed in the presentation can be found in `pre_plots` in the `analysis` file.
 2. Slide for the presentation can be found here:
-
 https://github.com/ST541-Fall2020/Tingyu_project_KDE/blob/master/ST541_KDE_Slides_TingyuZhu.pdf
 
 
