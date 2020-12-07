@@ -16,7 +16,7 @@ set.seed(1222)
 
 Inspection about the bandwidth. Compare the performance under different methods of selecting the bandwidth. 
 
-## Simulation over diferent n & h & kernel
+## Simulation over different n & h & kernel
 `sim_big_made` is used to simulate over different combinations of sample sizes, kernels and bandwidth. The out out is the MADEs under different combination of parameters.
 In this simulation, the bandwidths are randomly selected.
 
@@ -71,9 +71,8 @@ The normal reference bandwidth selector is only a simple rule of thumb. It is a 
 
 ### 2. plug-in bandwidth selector
 
-There are quite a few important techniques for selecting the bandwidth such as cross-validation (CV) and plug-in bandwidth selectors. 
-
-Function dpik() in the package KernSmooth in R selects a bandwidth for estimating the kernel density estimation using the plug-in method.
+There are quite a few important techniques for selecting the bandwidth without the restrictions to the Gaussian. such as cross-validation (CV) and plug-in bandwidth selectors. 
+Function `dpik()` in the package "KernSmooth" in R selects a bandwidth for estimating the kernel density estimation using the plug-in method.
 
 ```{r}
 library("KernSmooth")
