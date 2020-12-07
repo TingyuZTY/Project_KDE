@@ -42,8 +42,9 @@ ggplot(data=kernel_comp_long) +
 
 ## Compute the MADE (Mean Absolute Deviation Errors)
 
-The Mean Absolute Deviation Errors for $\hat{f}(\cdot)$is defined as $$MADE=\frac{1}{n}\sum_{k=1}^{n}|(\hat{f}(u_k)-f(u_k))|$$,
-where $\hat{f}(u_k)$ is the kernel estimte of $f(u_k))$, and {$u_k$} are the frid points taken to be arbitrary within the range of data.
+The Mean Absolute Deviation Errors is a way to measure the bias of the KDE method. 
+It is defined as $$MADE=\frac{1}{n}\sum_{k=1}^{n}|(\hat{f}(u_k)-f(u_k))|$$,
+where $\hat{f}(u_k)$ is the kernel estimte of $f(u_k))$, and {$u_k$} are the grid points taken to be arbitrary within the range of data. Small MADE means the estimated densities is colse to the true densities. 
 
 When the sample is generated from the known distribution like exp,beta, gamma, etc., we can use corresponding built-in functions (dexp(), dgamma, etc.) to calculated the true denstities of the grid points. If the sample is not from the familar distributions, we can use the built-in function "denstiy()" in R to get the value of $f(u_k))$s.
 
