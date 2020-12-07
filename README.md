@@ -13,6 +13,7 @@ The goal of this project is to conduct simulations to assess the performance of 
 
 
 Structure:
+
 Main parts of this project includes the following:
 1. `simluation` file: demonstrates the steps of the project week by week(5-8). 
 2. `analysis` file: analysis for the results of the corresponding simulations in the `simluation` file. 
@@ -21,6 +22,7 @@ Main parts of this project includes the following:
 5. `R` file: saves the key functions that are used to generate the Kernel Density Esitmation and simulations.
 
 Contents:
+
 Week 5: Check the correctness of the `KDE_est()` function. Illustrate the boundary effect of the KDE method. (Details can be found in `simulation_week5.pdf` in the `simulation` file)
 
 Week 6: Display some commonly used kernel functions. State a way to measure the bias of the KDE. Explore the simulation results with different sample sizes & kernels with bandwidth fixed. (Details can be found in `simulation_week6.pdf` in the `simulation` file and `Summary_week6` in the `analysis` file).
@@ -30,6 +32,7 @@ Week 7: Simulation over different n & h & kernel. State two types of bandwidth s
 Week 8: Apply the KDE method to a real dataset in R `beaver1`. (Details can be found in `simulation_week8.pdf` in the `simulation` file and `pre_plots` in the `analysis` file).
 
 Presentation: 
+
 Plots displayed in the presentation can be found in `pre_plots` in the `analysis` file.
 
 Slide for the presentation can be found here:
