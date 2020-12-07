@@ -23,7 +23,7 @@ So, my first task is to explore the influence of different choices of kernel fun
 ## Progress and results
 ### Step 1 (week 5)
 The key function `KDE_est()` was built. Using normally distributed samples, we found that our estimated densities are quite close to the true densities. Furthermore, by estimating a sample from the `exp(2)` distribution, we found that, as pointed out in the literature, the KDE method has trouble in estimating the boundary densities.  (week 5)
-Details can be found in `simulation_week5.pdf` in the `simulation` file.
+Details can be found in `simulation_week5.pdf` in the `simulation` folder.
 
 ### Step 2 (week 6)
 Simulations are conducted under different combinations of kernel functions and sample sizes, with fixed bandwidth fixed at a given value. Under each combination of the parameter, simulations are repeated 100 times. For each simulation, the MADE is calculated. Then, compute the means and standard deviations of MADEs of all the 100 replicates. 
@@ -31,7 +31,7 @@ Simulations are conducted under different combinations of kernel functions and s
 Results show that, under the same sample size, the MADEs of different kernel functions are close to each other. And for all choice of kernels, larger sample sizes can generate more accurate results (smaller MADEs). 
 
 Thus, a large sample size can improve the KDE estimation and the choice of kernel functions is not very crucial.
-Details can be found in `simulation_week6.pdf` in the `simulation` file and `Summary_week6` in the `analysis` file.
+Details can be found in `simulation_week6.pdf` in the `simulation` folder and `Summary_week6` in the `analysis` folder.
 
 ```{r fig1, echo=FALSE, fig.height=2, fig.width=8}
 made_comapre <- read_rds(here("results", "week6-sim-plot.rds"))
@@ -44,9 +44,9 @@ made_comapre %>%
    theme_bw() +ggtitle("MADEs of different kernels & sample sizes")+
   xlab("sample size")+
   ylab("MADE")+
-  theme( legend.title = element_text(size = 12),
-          legend.text = element_text(size = 12),
-         plot.title = element_text(size=12))
+  theme( legend.title = element_text(size = 10),
+          legend.text = element_text(size = 10),
+         plot.title = element_text(size=10))
 
 
 made_comapre %>% 
@@ -66,16 +66,36 @@ made_comapre %>%
 
 
 ### Step 3 (week 7)
-This step aims to explore the influence of the choice of bandwidth. First, simulations are conducted under different combinations of kernels, sample sizes, and bandwidths using the same way as in Step 2. Results show that under the same sample size and kernel, the estimation results using different bandwidths are quite different. Thus, bandwidth is a crucial factor in the KDE method.
+This step aims to explore the influence of the choice of bandwidth. First, simulations are conducted under different combinations of kernels, sample sizes, and bandwidths using the same way as in Step 2. Following plot shows that under the same sample size and kernel, the estimation results using different bandwidths are quite different. Thus, bandwidth is a crucial factor in the KDE method. 
+
+```{r fig2, echo=FALSE, fig.height=3, fig.width=8}
+made_comapre2 <- read_rds(here("results", "week7-sim-1-plot.rds"))
+
+made_comapre2 %>% 
+  ggplot(aes(x =kernel_type, y = made_mean, color =  factor(h))) +
+    geom_pointrange(aes(
+      ymin = made_mean - 1.96*made_sd/sqrt(n.sim),
+      ymax = made_mean + 1.96*made_sd/sqrt(n.sim))) +
+    geom_point()  +
+  facet_wrap(~ n)+
+   theme_bw() +ggtitle("MADEs of differents bandwidth under the same kernel")+
+    xlab("kernel type")+
+  ylab("MADE")+
+  theme( legend.title = element_text(size = 10),
+          legend.text = element_text(size = 10),
+         plot.title = element_text(size=10))+
+  labs(color="Bandwidth")
+```
+
 
 Then, we adopt two types of bandwidth selectors: the normal reference bandwidth selector and the plug-in bandwidth selector. Results in the literature stated that the former tends to have good performance when the distribution of data is close to normal. While the latter can be used for any data.
 
 Here are the simulation results of the samples from the `t(5)` distribution under different combinations of the kernels and bandwidths with the same sample size. We can see that the plug-in bandwidths under the corresponding kernels (h_plug_Gau and h_plug_Epa) have the smallest MADEs. 
 
 However, other simulation results show that under some samples, the plug-in bandwidths may not have the smallest MADEs. The conclusion is that-- if the data looks close to normal, the Normal reference bandwidth selector can be the first choice; if the data is far from normal, the plug-in bandwidth selector is a better choice.
-Details for this part can be found in `simulation_week7.pdf` in the `simulation` file and `Summary_week7` in the `analysis` file.
+Details for this part can be found in `simulation_week7.pdf` in the `simulation` folder and `Summary_week7` in the `analysis` folder.
 
-```{r fig3, echo=FALSE, fig.height=2, fig.width=8}
+```{r fig3, echo=FALSE, fig.height=3, fig.width=8}
 comapre_bdwt_t <- read_rds(here("results", "week78-sim-t-plot.rds"))
 
 #png(here("plots", "KDE_t.png"),width=1600, height=900)
@@ -90,4 +110,39 @@ ggplot(aes(x =kernel_type, y = made_mean, color =  bandwidth)) +
 ```
 
 ### Step 4 (week8)
-In the last step, we estimate the "beaver's Body Temperature" using the KDE method with different choices of bandwidth and kernels. Then, we compare the estimation results with those generated by the built-in `density()` function in R. Plot shows our estimated density curve using the plug-in bandwidth is quite close to the curve generated by the `density()` function. Details can be found in `simulation_week8.pdf` in the `simulation` file and `pre_plots` in the `analysis` file.
+In the last step, we estimate the "beaver's Body Temperature" using the KDE method with different choices of bandwidth and kernels. Then, we compare the estimation results with those generated by the built-in `density()` function in R. 
+
+```{r fig4, echo=FALSE, fig.height=4, fig.width=8, warning=FALSE}
+est_big <- read_rds(here("results", "beaver.rds"))
+
+est_big_df <- unnest(est_big)
+method.c <- c("plugin_gua" = "darkorange", 
+              "plugin_bi" = "dodgerblue",
+              "opt_gua" = "gray")
+
+r <- density(beaver1$temp)
+true <- data.frame(x=r$x, y=r$y)
+
+est_big_df %>% filter(kernel_type=="normal") %>%
+  ggplot()+
+  geom_line(aes(x = grid,y = f_ests,color = bandwidth_type), size=2)+
+  facet_wrap(~kernel_type)+
+  scale_colour_manual(values = method.c) +
+   xlab("temperature")+
+  ylab("density")+
+  geom_line(data = true, 
+            aes(x = x, y = y),
+            color = "black")+
+  theme_bw() +
+  labs(title = "KDE of Beaver body temperature",
+       subtitle = "The balck line is density curve generated by `density()`")+
+  theme(axis.text.x = element_text( hjust = 1), 
+        plot.title = element_text(size=10))+
+  theme(axis.text.y = element_text(colour = 'black', size = 10), 
+          axis.title.y = element_text(size = 10, 
+          hjust = 0.5, vjust = 0.2))
+
+```
+
+
+Plot shows our estimated density curve using the plug-in bandwidth is quite close to the curve generated by the `density()` function. Details can be found in `simulation_week8.pdf` in the `simulation` file and `pre_plots` in the `analysis` file.
