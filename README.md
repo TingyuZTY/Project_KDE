@@ -48,12 +48,12 @@ The `kde_est_function.R` in the `R` folder needs to be run to perform the simula
 
 ### Primary functions
 1. KDE_est(x,grid=NULL,h,ker="normal") is used to generate the Kernel density estimation results.
-   inputs: 
-      x: numeric vector, the samples;  
-      grid: numeric vector, the grid points;
-      h: positive numeric, the bandwidth; 
-      ker: character, name of the kernel function.
-   outputs: list of esimated densities and corresponding grid points.
+   - inputs: 
+      - x: numeric vector, the samples;  
+      - grid: numeric vector, the grid points;
+      - h: positive numeric, the bandwidth; 
+      - ker: character, name of the kernel function.
+   - outputs: list of esimated densities and corresponding grid points.
 
 
 2. kde_est_big(x, n, ker, h, grid) is used to simulate over different sample sizes & kernels & bandwidths. 
