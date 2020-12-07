@@ -1,0 +1,56 @@
+---
+title: "Summary_week6"
+author: "Tingyu Zhu"
+date: "12/6/2020"
+output: pdf_document
+---
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(purrr)
+devtools::load_all()
+```
+
+### Different sample sizes & kernels
+```{r}
+made_comapre <- read_rds(here("results", "week6-sim-plot.rds"))
+#png(here("plots", "KDE_small_size.png"),width=1600, height=900)
+
+made_comapre %>% 
+  ggplot(aes(x = n, y = made_mean)) +
+    geom_pointrange(aes(
+      ymin = made_mean - 1.96*made_sd/sqrt(100),
+      ymax = made_mean + 1.96*made_sd/sqrt(100))) +
+    geom_point()  +
+   facet_wrap(~ kernel_type)+
+   theme_bw() +ggtitle("MADEs of different kernels & sample sizes")+
+  xlab("sample size")+
+  ylab("MADE")+
+  theme( legend.title = element_text(size = 14),
+          legend.text = element_text(size = 14),
+         plot.title = element_text(size=14))
+#dev.off()
+```
+
+Results shows that larger sample size will lead to smaller MADEs (more accurate estimation results). 
+
+```{r}
+#png(here("plots", "KDE_small_kers.png"),width=1600, height=900)
+
+made_comapre %>% 
+  ggplot(aes(x = n, y = made_mean, color=kernel_type)) +
+    geom_pointrange(aes(
+      ymin = made_mean - 1.96*made_sd/sqrt(100),
+      ymax = made_mean + 1.96*made_sd/sqrt(100))) +
+    geom_point()  +
+   theme_bw() +ggtitle("MADEs of different kernels & sample sizes")+
+  xlab("sample size")+
+  ylab("MADE")+
+  theme( legend.title = element_text(size = 14),
+          legend.text = element_text(size = 14),
+         plot.title = element_text(size=14))
+#dev.off()
+```
+
+And with the same sample size and the same bandwidth, the MADEs are quite similar to each other. Thus, the chioce of kernel functions is not very crucial.
