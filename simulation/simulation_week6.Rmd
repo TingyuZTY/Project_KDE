@@ -55,10 +55,14 @@ Explore the simulation results with different sample sizes & kernels
 
 Note: The follwoing functions are similar to `kde_est_big`, `sim_big_made `, and `save_made ` that are used in week 7, which are listed in the `kde_est_functions.R`. However, they are the first versions and are much simpler. Thus, we will not modify this part and keep those fucntions here as the records.
 
-```{r}
-# Define some functions for gievn h=bandwidth, 
-# simulate over different sample size and kernels
+Here `kde_n_ker_est()` is used to simulate over different sample size and kernels for a given bandwidth h=1.06*100^(-0.2), the output is the estimated densities. 
 
+`sim_made` is used to first generate combination of parameters, and then for each combination of parameters, using `kde_n_ker_est()` to generate the estimated densities, and the corresponding true densities. Then, `made()` is used to computae the MADE. The out out is the MADEs under different combination of parameters.
+
+```{r}
+# Define some functions for gievn h=1.06*100^(-0.2), 
+
+# simulate over different sample size and kernels
 kde_n_ker_est <- function(x, n, ker, grid){
   # x large population
   # n sample sizes
@@ -70,6 +74,7 @@ kde_n_ker_est <- function(x, n, ker, grid){
 }
 
 sim_made <- function(ns, kes, x, grid, true_f){
+  
   # generates every combination of parameters (ns:kers)
   simulation_params_big <- list(
   n = ns,
@@ -93,7 +98,9 @@ sim_made <- function(ns, kes, x, grid, true_f){
 
 
 ### Simulation
-Generate samples from t(3) distribution. Then, using five types of kernel function and different size of samples that are drawn from the large population.
+Generate samples from t(3) distribution. Then, using five types of kernel function and different size of samples that are drawn from the large population. 
+
+Simulation is repeated `n.sim` times.
 ```{r}
 # population
 x <- rt(50000, df=3)
@@ -126,3 +133,7 @@ made_comapre <- tibble(
 write_rds(made_mat , here("results", "week6-sim.rds"))
 write_rds(made_comapre, here("results", "week6-sim-plot.rds"))
 ```
+
+
+### Analysis
+Results and plots are documented in `Summary_week6` in the `analysis` file.
