@@ -52,6 +52,9 @@ When the sample is generated from the known distribution like exp,beta, gamma, e
 Explore the simulation results with different sample sizes & kernels
 
 ### Build simulation functions that can save the MADE.
+
+Note: The follwoing functions are similar to `kde_est_big`, `sim_big_made `, and `save_made ` that are used in week 7, which are listed in the `kde_est_functions.R`. However, they are the first versions and are much simpler. Thus, we will not modify this part and keep those fucntions here as the records.
+
 ```{r}
 # Define some functions for gievn h=bandwidth, 
 # simulate over different sample size and kernels
@@ -66,7 +69,6 @@ kde_n_ker_est <- function(x, n, ker, grid){
                   grid, h= 1.06*100^(-0.2), ker = .y)$f_est)
 }
 
-
 sim_made <- function(ns, kes, x, grid, true_f){
   # generates every combination of parameters (ns:kers)
   simulation_params_big <- list(
@@ -74,18 +76,21 @@ sim_made <- function(ns, kes, x, grid, true_f){
   kernel_type = kers)
   n_ker_est_big <- cross_df(simulation_params_big)
   
+  
   n_ker_est_big <- n_ker_est_big %>% 
   mutate(
+    # for each combination of the paras, using the kde_n_ker_est()
     f_ests = kde_n_ker_est(x, n, kernel_type, grid),
-    f_true = map(1:length(n), ~true_f)
+    f_true = map(1:length(n), ~true_f) # save the corresponding true density
   ) %>% 
   mutate(
-    MADE = map2_dbl(.x = f_ests, .y = f_true, ~made(.x,.y))
+    MADE = map2_dbl(.x = f_ests, .y = f_true, ~made(.x,.y)) # calculate the MADE
   )
   return(n_ker_est_big$MADE)
 }
 
 ```
+
 
 ### Simulation
 Generate samples from t(3) distribution. Then, using five types of kernel function and different size of samples that are drawn from the large population.
