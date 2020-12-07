@@ -15,15 +15,13 @@ devtools::load_all()
 set.seed(1222)
 ```
 
-## Beaver's temprature
+## Beaver's temprature KDE
 Here, we try to apply our KDE method to a real dataset: Beaver1, which records the beaver's body temperature during a day.
 
-We try to estimate its distribution by two types of kernel functions. The first type of bandwidths are selected using the plug in method under corresponding kernel functions. And using the Guassian optimal bandwidth as the second type of bandwidth.
+We try to estimate its distribution by two types of kernel functions. The first type of bandwidths are selected using the "plug-in" method under corresponding kernel functions. And using the "Guassian optimal bandwidth" as the second type of bandwidth.
 
 ```{r}
-plot(density(beaver1$temp))
 # ?beaver1
-
 h_plug_gua <- dpik(beaver1$temp,kernel = "normal") 
 h_plug_bi <- dpik(beaver1$temp,kernel = "biweight") 
 h_opt <- 1.06*sd(beaver1$temp)*length(beaver1$temp)^(-0.2)
@@ -47,27 +45,13 @@ est_big <- est_big %>%
   ) 
 
 
-est_big$bandwidth_type <- ifelse(abs(est_big$bandwidth_type - 0.053)<0.001, "gua_plug", 
-                                 ifelse(abs(est_big$bandwidth_type - 0.138)<0.001, 
-                                 "bi_plug", "gua_opt"))
+est_big$bandwidth_type <- ifelse(abs(est_big$bandwidth_type - 0.053) < 0.001,
+                                 "plugin_gua", 
+                                 ifelse(abs(est_big$bandwidth_type -0.138)<0.001,
+                                 "plugin_bi", "opt_gua"))
 
-est_big_df <- unnest(est_big)
-
-est_big_df %>% 
-  ggplot()+
-  geom_line(aes(x = grid,y = f_ests,color = kernel_type))+
-  facet_wrap(~bandwidth_type)+
-  xlab("temperature")+
-  ylab("density")+
-  theme_bw() +ggtitle("KDE of Beaver temperature")
-
-est_big_df %>% 
-  ggplot()+
-  geom_line(aes(x = grid,y = f_ests,color = bandwidth_type))+
-  facet_wrap(~kernel_type)+
-  scale_color_brewer(palette="Dark2") +
-   xlab("temperature")+
-  ylab("density")+
-  theme_bw() +ggtitle("KDE of Beaver temperature")
+write_rds(est_big, here("results", "beaver.rds"))
 ```
 
+
+Analysis of the beaver's data is included in the `pre_plots` files.
