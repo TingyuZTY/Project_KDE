@@ -70,7 +70,7 @@ The `kde_est_function.R` in the `R` folder needs to be run to perform the simula
      - x: numeric vector, the large population;  
      - ns: numeric vector, different sample sizes;
      - kers: character vector, names of different kernel functions;
-     - hs: positive numeric vector, different bandwidths;
+     - hs: positive numeric data.frame, different bandwidths;
      - grid: numeric vector, the grid points;
      - true_f: numeric vector, true densities.
    - output: list of MADEs under different combination of parameters.
